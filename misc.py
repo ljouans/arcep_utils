@@ -1,3 +1,5 @@
+import os
+import random
 from pathlib import Path
 from typing import Any, Iterable, Optional, Sized, Union
 
@@ -35,3 +37,44 @@ def make_iterator(iterator: Union[Sized, Iterable], low_bound: int = 100, size: 
 	else:
 		return iterator
 	
+
+def first_file(rootpath: Union[str, Path]) -> Path:
+	iterator = os.walk(rootpath)
+	e = next(iterator)
+	while e[2] == []:
+		e = next(iterator)
+	return Path(e[0]) / e[2][0]
+
+def nth_file(rootpath: Union[str, Path], n: int) -> Path:
+	iterator = os.walk(rootpath)
+	e = next(iterator)
+	while e[2] == []:
+		e = next(iterator)
+	
+	return Path(e[0]) / e[2][n]
+
+
+
+
+def random_first_file(rootpath: Union[str, Path]) -> Path:
+	iterator = os.walk(rootpath)
+	e = next(iterator)
+	while e[2] == []:
+		e = next(iterator)
+	
+	return Path(e[0]) / e[2][random.randint(0, len(e[2]))]
+
+def iterate_files(rootpath: Union[str, Path]) -> Iterable[Path]:
+	iterator = os.walk(rootpath)
+
+	e = next(iterator, None)
+	while e is not None:
+		while e[2] == []:
+			e = next(iterator)
+
+		i = 0
+		while i < len(e[2]):
+			yield Path(e[0]) / e[2][i]
+			i += 1
+		e = next(iterator, None)
+		
