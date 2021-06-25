@@ -32,7 +32,7 @@ def _type_df(df: pd.DataFrame, numeric_cols: List[str] = []):
 		df.loc[:,col]=pd.to_numeric(df[col], errors='coerce')
 	
 
-def read_all_ipe(columns: List[str], numeric_cols: List[str] = [], cols_are_optional: bool = True):
+def read_all_ipe(columns: List[str], numeric_cols: List[str] = [], cols_are_optional: bool = True, _test_nrows:int=None):
 	"""
 	Lis tous les IPE de l'archive pointée.
 	- columns: liste des colonnes à charger
@@ -55,7 +55,7 @@ def read_all_ipe(columns: List[str], numeric_cols: List[str] = [], cols_are_opti
 			ext = name[-3:]
 			if ext == 'csv':
 				with z.open(name, 'r') as f:
-					df = _read_single_file(f, cols=columns)
+					df = _read_single_file(f, cols=columns, nrows=_test_nrows)
 					# dfs[-1] = dfs[-1].drop_duplicates(subset='ReferencePM')
 					has_all_cols = df.shape[1] == len(columns)
 					if not has_all_cols:
