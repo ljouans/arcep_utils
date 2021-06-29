@@ -37,6 +37,11 @@ def config_path() -> Path:
 	path.mkdir(parents=True, exist_ok=True)
 	return path
 
+def test_path() -> Path:
+	path = (_get_tool_path() / '../../tests').resolve()
+	path.mkdir(parents=True, exist_ok=True)
+	return path
+
 def specific_datapath(stem: Union[str, Path]):
 	"""
 	Renvoi le chemin absolu vers le dossier {data}/stem/
