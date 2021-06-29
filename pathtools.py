@@ -37,7 +37,14 @@ def config_path() -> Path:
 	path.mkdir(parents=True, exist_ok=True)
 	return path
 
-def test_path() -> Path:
+
+
+def outer_out() -> Path:
+	path = (_get_tool_path() / '../../out').resolve()
+	path.mkdir(parents=True, exist_ok=True)
+	return path
+
+def outer_test_path() -> Path:
 	path = (_get_tool_path() / '../../tests').resolve()
 	path.mkdir(parents=True, exist_ok=True)
 	return path
