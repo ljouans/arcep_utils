@@ -15,7 +15,7 @@ from . import pathtools as pth
 from pathlib import Path
 
 class Tool:
-	def __init__(self, tmpDir: Optional[Path] = None, userFileName: str='', secretPathFile: Optional[Path] = None):
+	def __init__(self, tmpDir: Optional[Path] = None, userFileName: str='', secretPathFile: Optional[Union[Path, str]] = None):
 		if tmpDir is None:
 			tmpDir = pth.tmp_path()
 
@@ -33,11 +33,11 @@ class Tool:
 	def _create_dir(self, folderPath:Path):
 		folderPath.mkdir(exist_ok=True)
 
-	def _create_engine(self, secretPathFile: Optional[Path] = None):
+	def _create_engine(self, secretPathFile: Optional[Union[str, Path]] = None):
 		parser = ConfigParser()
 
 		secretpath = pth._get_tool_path() / 'secret/db.cfg'
-		secretpath = secretPathFile if secretPathFile is not None else secretpath
+		secretpath = Path(secretPathFile) if secretPathFile is not None else secretpath
 
 		if not secretpath.exists():
 			raise FileNotFoundError('Could not find the secret folder. Please specify the connexion secrets')
