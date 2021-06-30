@@ -39,7 +39,7 @@ def config_path() -> Path:
 
 
 
-def outer_out() -> Path:
+def outer_out_path() -> Path:
 	path = (_get_tool_path() / '../../out').resolve()
 	path.mkdir(parents=True, exist_ok=True)
 	return path
