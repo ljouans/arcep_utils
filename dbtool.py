@@ -22,8 +22,8 @@ class Tool:
 		self._tmp = tmpDir
 		self._userFileName = userFileName
 		self._thisRandom = str(hash(userFileName))
-		self._engine = self._create_engine(secretPathFile)
 		self._connexion_string = ''
+		self._engine = self._create_engine(secretPathFile)
 		
 		
 	@property
