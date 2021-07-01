@@ -23,8 +23,13 @@ class Tool:
 		self._userFileName = userFileName
 		self._thisRandom = str(hash(userFileName))
 		self._engine = self._create_engine(secretPathFile)
+		self._connexion_string = ''
 		
 		
+	@property
+	def connexion_string(self):
+		return self._connexion_string
+
 	@property
 	def tmp(self):
 		return self._tmp / self._thisRandom
@@ -45,6 +50,7 @@ class Tool:
 		_ = parser.read(secretpath)
 
 		engine = create_engine(parser.get('Collecte03_dev', 'conn_string'))
+		self._connexion_string = parser.get('Collecte03_dev', 'conn_string')
 		return engine
 
 	def has_table(self, table_name: str, schema: str) -> bool:
