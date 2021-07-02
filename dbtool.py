@@ -15,7 +15,7 @@ from . import pathtools as pth
 from pathlib import Path
 
 class Tool:
-	def __init__(self, tmpDir: Optional[Path] = None, userFileName: str='', secretPathFile: Optional[Union[Path, str]] = None):
+	def __init__(self, tmpDir: Optional[Path] = None, userFileName: str='', secretPathFile: Optional[Union[Path, str]] = None, connection_string: Optional[str] = None):
 		if tmpDir is None:
 			tmpDir = pth.tmp_path()
 
@@ -23,7 +23,7 @@ class Tool:
 		self._userFileName = userFileName
 		self._thisRandom = str(hash(userFileName))
 		self._connexion_string = ''
-		self._engine = self._create_engine(secretPathFile)
+		self._engine = self._create_engine(secretPathFile, connection_string)
 		
 		
 	@property
@@ -38,19 +38,21 @@ class Tool:
 	def _create_dir(self, folderPath:Path):
 		folderPath.mkdir(exist_ok=True)
 
-	def _create_engine(self, secretPathFile: Optional[Union[str, Path]] = None):
-		parser = ConfigParser()
+	def _create_engine(self, secretPathFile: Optional[Union[str, Path]] = None, connectionString: Optional[str] = None):
+		if connectionString is None:
+			parser = ConfigParser()
 
-		secretpath = pth._get_tool_path() / 'secret/db.cfg'
-		secretpath = Path(secretPathFile) if secretPathFile is not None else secretpath
+			secretpath = pth._get_tool_path() / 'secret/db.cfg'
+			secretpath = Path(secretPathFile) if secretPathFile is not None else secretpath
 
-		if not secretpath.exists():
-			raise FileNotFoundError('Could not find the secret folder. Please specify the connexion secrets')
+			if not secretpath.exists():
+				raise FileNotFoundError('Could not find the secret folder. Please specify the connexion secrets')
 
-		_ = parser.read(secretpath)
+			_ = parser.read(secretpath)
+			connectionString = parser.get('Collecte03_dev', 'conn_string')
 
-		engine = create_engine(parser.get('Collecte03_dev', 'conn_string'))
-		self._connexion_string = parser.get('Collecte03_dev', 'conn_string')
+		self._connexion_string = connectionString
+		engine = create_engine(connectionString)
 		return engine
 
 	def has_table(self, table_name: str, schema: str) -> bool:
