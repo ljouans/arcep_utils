@@ -78,3 +78,9 @@ def iterate_files(rootpath: Union[str, Path]) -> Iterable[Path]:
 			i += 1
 		e = next(iterator, None)
 		
+
+def insee_department_from_city(insee_city: str) -> str:
+	dpt = insee_city[:2]
+	if dpt in {'97', '98'}:
+		dpt = insee_city[:3]
+	return dpt
