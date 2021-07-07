@@ -13,6 +13,7 @@ import geopandas as pdg
 import pandas as pd
 
 from . import pathtools as pth
+from .argstruct.database_secret import DatabaseSecret, ExtendedDatabaseSecret
 from .argstruct.geo_table_info import GeoInfo
 
 warnings.filterwarnings("ignore", message=".*initial implementation of Parquet.*")
@@ -30,13 +31,14 @@ class Tool:
         tmpDir: Optional[Path] = None,
         secretPathFile: Optional[Union[Path, str]] = None,
         connection_string: Optional[str] = None,
+        database_secret: Optional[ExtendedDatabaseSecret] = None
     ):
         if tmpDir is None:
             tmpDir = pth.tmp_path()
 
         self._tmp = tmpDir
         self._connexion_string = ""
-        self._engine = self._create_engine(secretPathFile, connection_string)
+        self._engine = self._create_engine(secretPathFile, connection_string, database_secret)
 
     @property
     def tmp(self) -> Path:
@@ -62,8 +64,13 @@ class Tool:
         self,
         secret_path_file: Optional[Union[str, Path]] = None,
         connection_string: Optional[str] = None,
+        database_secret: Optional[ExtendedDatabaseSecret] = None,
     ):
-        if connection_string is None:
+        if connection_string is not None:
+            pass
+        elif database_secret is not None:
+            connection_string = f'postgresql://{database_secret.user}:{database_secret.password}@{database_secret.host}:{database_secret.port}/{database_secret.db}'
+        elif secret_path_file is not None:
             parser = ConfigParser()
 
             secretpath = pth._get_tool_path() / "secret/db.cfg"
@@ -76,6 +83,10 @@ class Tool:
 
             _ = parser.read(secretpath)
             connection_string = parser.get("Collecte03_dev", "conn_string")
+        else:
+            print("Could not build the connection string. Please specify at least one of connection_string, "
+                  "database_secret or secret_path_file")
+            exit(1)
 
         self._connexion_string = connection_string
         engine = create_engine(connection_string)
