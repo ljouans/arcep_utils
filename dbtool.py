@@ -73,7 +73,7 @@ class Tool:
             pass
         elif database_secret is not None:
             connection_string = f'postgresql://{database_secret.user}:{database_secret.password}@{database_secret.host}:{database_secret.port}/{database_secret.db}'
-        elif secret_path_file is not None:
+        else:
             parser = ConfigParser()
 
             secretpath = pth._get_tool_path() / "secret/db.cfg"
@@ -86,10 +86,6 @@ class Tool:
 
             _ = parser.read(secretpath)
             connection_string = parser.get("Collecte03_dev", "conn_string")
-        else:
-            print("Could not build the connection string. Please specify at least one of connection_string, "
-                  "database_secret or secret_path_file")
-            exit(1)
 
         self._connexion_string = connection_string
         engine = create_engine(connection_string)
