@@ -49,6 +49,9 @@ class Tool:
         return self._tmp
 
     @property
+    def engine(self):
+        return self._engine
+    @property
     def connexion_string(self) -> str:
         """Retourne la chaine de connexion utilisée pour parler avec la base
 
