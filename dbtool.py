@@ -2,21 +2,21 @@ import hashlib
 import logging
 import os
 import warnings
-from typing import Any, Callable, Dict, Optional, Sequence, Union
-
 from configparser import ConfigParser
 from pathlib import Path
+from typing import Any, Callable, Dict, Optional, Sequence, Union
 
-import sqlalchemy as sqa
-from sqlalchemy import create_engine
 import geopandas as pdg
 import pandas as pd
+import sqlalchemy as sqa
+from sqlalchemy import create_engine
 
 from . import pathtools as pth
-from .argstruct.database_secret import DatabaseSecret, ExtendedDatabaseSecret
+from .argstruct.database_secret import ExtendedDatabaseSecret
 from .argstruct.geo_table_info import GeoInfo
 
 warnings.filterwarnings("ignore", message=".*initial implementation of Parquet.*")
+
 
 def _create_dir(folder_path: Path):
     folder_path.mkdir(exist_ok=True)
@@ -26,12 +26,13 @@ class Tool:
     """
     Outil de connexion et de requête en base, de chargement de geo/dataframe.
     """
+
     def __init__(
-        self,
-        tmpDir: Optional[Path] = None,
-        secretPathFile: Optional[Union[Path, str]] = None,
-        connection_string: Optional[str] = None,
-        database_secret: Optional[ExtendedDatabaseSecret] = None
+            self,
+            tmpDir: Optional[Path] = None,
+            secretPathFile: Optional[Union[Path, str]] = None,
+            connection_string: Optional[str] = None,
+            database_secret: Optional[ExtendedDatabaseSecret] = None
     ):
         if tmpDir is None:
             tmpDir = pth.tmp_path()
@@ -53,6 +54,7 @@ class Tool:
     @property
     def engine(self):
         return self._engine
+
     @property
     def connexion_string(self) -> str:
         """Retourne la chaine de connexion utilisée pour parler avec la base
@@ -62,12 +64,11 @@ class Tool:
         """
         return self._connexion_string
 
-
     def _create_engine(
-        self,
-        secret_path_file: Optional[Union[str, Path]] = None,
-        connection_string: Optional[str] = None,
-        database_secret: Optional[ExtendedDatabaseSecret] = None,
+            self,
+            secret_path_file: Optional[Union[str, Path]] = None,
+            connection_string: Optional[str] = None,
+            database_secret: Optional[ExtendedDatabaseSecret] = None,
     ):
         if connection_string is not None:
             pass
@@ -113,12 +114,12 @@ class Tool:
         return str(df["st_srid"].values[0])
 
     def fetch_query(
-        self,
-        query: str,
-        store_it: bool = True,
-        geo_info: Optional[GeoInfo] = None,
-        force_refetch: bool = False,
-        params: Optional[Dict[str, Any]] = None,
+            self,
+            query: str,
+            store_it: bool = True,
+            geo_info: Optional[GeoInfo] = None,
+            force_refetch: bool = False,
+            params: Optional[Dict[str, Any]] = None,
     ) -> Union[pd.DataFrame, pdg.GeoDataFrame]:
         """Exécute une requête qui va chercher des données en base et les formatte en Geo/Dataframe.
 
@@ -143,7 +144,7 @@ class Tool:
                     " informations so that I can get the right CRS."
                 )
             else:
-                crs = "EPSG:"+self._get_crs(geo_info.table, geo_info.column, schema=geo_info.schema)
+                crs = "EPSG:" + self._get_crs(geo_info.table, geo_info.column, schema=geo_info.schema)
                 logging.debug("Found CRS = %s", crs)
 
         if geo_info is None:
@@ -167,7 +168,7 @@ class Tool:
 
         # Parse
         if loaded_from_server and geo_info is not None:
-            gk = pdg.GeoSeries.from_wkb(df[geo_info.column])  #  type: ignore
+            gk = pdg.GeoSeries.from_wkb(df[geo_info.column])  # type: ignore
             df = pdg.GeoDataFrame(df, geometry=gk, crs=crs)
             df = df.drop([geo_info.column], axis=1)  # type: ignore
 

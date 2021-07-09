@@ -1,13 +1,11 @@
 import os
-import sys
+import pickle
 import random
+import sys
 from pathlib import Path
 from typing import Any, Iterable, Optional, Sized, Union
 
 import tqdm
-
-from . import pathtools as pth
-import pickle
 
 CuPath = Optional[Union[str, Path]]
 
@@ -23,10 +21,10 @@ def _clean_path(filepath: CuPath = None, basepath: CuPath = None, filename: CuPa
 
 
 def save(
-    data: Any,
-    filename: Optional[str] = None,
-    basepath: Optional[Union[str, Path]] = None,
-    filepath: Union[str, Path] = None,
+        data: Any,
+        filename: Optional[str] = None,
+        basepath: Optional[Union[str, Path]] = None,
+        filepath: Union[str, Path] = None,
 ):
     """Raccourcis pour sauvegarder des données en utilisant pickle.
 
@@ -60,11 +58,11 @@ def load(filepath: CuPath = None, filename: CuPath = None, basepath: CuPath = No
 
 
 def make_iterator(
-    iterator: Union[Sized, Iterable],
-    low_bound: int = 100,
-    size: Optional[int] = None,
-    desc: str = "",
-    leave: bool = False,
+        iterator: Union[Sized, Iterable],
+        low_bound: int = 100,
+        size: Optional[int] = None,
+        desc: str = "",
+        leave: bool = False,
 ) -> Any:
     """Raccourcis pour créer un itérateur avec TQDM seulement s'il est assez gros.
 
