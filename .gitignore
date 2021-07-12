@@ -1,2 +1,5 @@
 __pycache__/
 secret/
+
+.pytest_cache
+.coverage

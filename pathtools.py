@@ -17,7 +17,7 @@ def data_path() -> Path:
     le chemin absolu vers le dossier parent/data/.
     Crée le dossier si nécessaire
     """
-    path = (_get_tool_path() / "../data").resolve()
+    path = _get_tool_path().parent / "data"
     path.mkdir(parents=True, exist_ok=True)
     return path
 
@@ -37,7 +37,7 @@ def tmp_path() -> Path:
     Returns:
         Path: le chemin
     """
-    path = (_get_tool_path() / "../data/tmp").resolve()
+    path = _get_tool_path().parent / "data/tmp"
     path.mkdir(parents=True, exist_ok=True)
     return path
 
@@ -48,7 +48,7 @@ def config_path() -> Path:
     Returns:
         Path: le chemin
     """
-    path = (_get_tool_path() / "../config").resolve()
+    path = _get_tool_path().parent / "config"
     path.mkdir(parents=True, exist_ok=True)
     return path
 
@@ -59,7 +59,7 @@ def outer_out_path() -> Path:
     Returns:
         Path: le chemin
     """
-    path = (_get_tool_path() / "../../out").resolve()
+    path = _get_tool_path().parent.parent / "out"
     path.mkdir(parents=True, exist_ok=True)
     return path
 
@@ -70,7 +70,7 @@ def outer_test_path() -> Path:
     Returns:
         Path: le chemin
     """
-    path = (_get_tool_path() / "../../tests").resolve()
+    path = _get_tool_path().parent.parent / "tests"
     path.mkdir(parents=True, exist_ok=True)
     return path
 
