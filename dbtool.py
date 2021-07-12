@@ -18,8 +18,32 @@ from .argstruct.geo_table_info import GeoInfo
 warnings.filterwarnings("ignore", message=".*initial implementation of Parquet.*")
 
 
+# TODO REMOVE
 def _create_dir(folder_path: Path):
     folder_path.mkdir(exist_ok=True)
+
+
+def _rm_string_marker(string: str) -> str:
+    for marker in ['"', "'"]:
+        if string.startswith(marker) and string.endswith(marker):
+            return string.strip(marker)
+    return string
+
+
+def _connection_string_from_secret_file(secret_path_file: Optional[Union[Path, str]] = None):
+    parser = ConfigParser()
+    secretpath = pth._get_tool_path() / "secret/db.cfg"  # Pour la rétro-compatibilité
+    secretpath = Path(secret_path_file) if secret_path_file is not None else secretpath
+    if not secretpath.exists():
+        raise FileNotFoundError(
+            "Could not find the secret folder. Please specify the connexion secrets"
+        )
+    _ = parser.read(secretpath)
+    return _rm_string_marker(parser.get("database", "conn_string"))
+
+
+def _connection_string_from_db_secret(database_secret: ExtendedDatabaseSecret):
+    return f'postgresql://{database_secret.user}:{database_secret.password}@{database_secret.host}:{database_secret.port}/{database_secret.db}'
 
 
 class Tool:
@@ -73,37 +97,26 @@ class Tool:
         if connection_string is not None:
             pass
         elif database_secret is not None:
-            connection_string = f'postgresql://{database_secret.user}:{database_secret.password}@{database_secret.host}:{database_secret.port}/{database_secret.db}'
+            connection_string = _connection_string_from_db_secret(database_secret)
         else:
-            parser = ConfigParser()
-
-            secretpath = pth._get_tool_path() / "secret/db.cfg"
-            secretpath = Path(secret_path_file) if secret_path_file is not None else secretpath
-
-            if not secretpath.exists():
-                raise FileNotFoundError(
-                    "Could not find the secret folder. Please specify the connexion secrets"
-                )
-
-            _ = parser.read(secretpath)
-            connection_string = parser.get("Collecte03_dev", "conn_string")
+            connection_string = _connection_string_from_secret_file(secret_path_file)
 
         self._connexion_string = connection_string
         engine = create_engine(connection_string)
         return engine
 
-    def has_table(self, table_name: str, schema: str) -> bool:
+    def has_table(self, table: str, schema: str) -> bool:
         """Teste si <schema>.<table_name> existe dans la base cible
 
         Args:
-            table_name (str): nom de table
+            table (str): nom de table
             schema (str): nom du schema
 
         Returns:
             bool: True ssi la table existe
         """
         insp = sqa.inspect(self._engine)
-        return insp.has_table(table_name, schema=schema)
+        return insp.has_table(table, schema=schema)
 
     def _get_crs(self, table_name: str, geo_col: str, schema: str) -> str:
         df = pd.read_sql(

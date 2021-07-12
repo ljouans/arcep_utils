@@ -4,12 +4,9 @@ from pathlib import Path
 import pytest
 from pytest_mock import MockerFixture
 
+import utils.pathtools as pth
 from utils.argstruct.database_secret import ExtendedDatabaseSecret
 from utils.dbtool import _connection_string_from_db_secret, _connection_string_from_secret_file, _rm_string_marker, Tool
-
-
-def test_has_table():
-    assert False
 
 
 def test__get_crs():
@@ -66,7 +63,20 @@ def test__create_engine__with_string(mocker, connstring, dbsecret, secretfile, e
     mocker.patch('utils.dbtool.create_engine', new=nop)
     mocker.patch('utils.dbtool._connection_string_from_secret_file', new=nop)
     tool = Tool()
-    not_engine = tool._create_engine(connection_string=connstring, database_secret=dbsecret, secret_path_file=secretfile)
+    not_engine = tool._create_engine(connection_string=connstring, database_secret=dbsecret,
+                                     secret_path_file=secretfile)
     assert not_engine == expected
 
 
+@pytest.mark.skip(reason='Trop lent. À lancer de temps en temps. Requiert Putty.')
+def test__create_engine__real_connexion():
+    tool = Tool(secretPathFile=pth._get_tool_path() / 'tests/test_files/actually_secret/db.cfg')
+    tool.engine.connect()
+    assert True
+
+
+@pytest.mark.skip(reason='Trop lent. À lancer de temps en temps. Requiert Putty.')
+def test_has_table():
+    tool = Tool(secretPathFile=pth._get_tool_path() / 'tests/test_files/actually_secret/db.cfg')
+    assert tool.has_table(table='immeuble', schema='base_infra')
+    assert not tool.has_table(table='pas_immeuble', schema='base_infra')
