@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 
 
 @dataclass
@@ -8,3 +9,4 @@ class GeoInfo:
     column: str
     table: str
     schema: str = "test_loic"
+    condition: Optional[str] = None

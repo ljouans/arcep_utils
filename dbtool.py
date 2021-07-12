@@ -121,7 +121,7 @@ class Tool:
     def _get_crs(self, table: str, geo_col: str, schema: str, condition: Optional[str] = None) -> str:
         query = f"SELECT ST_SRID({geo_col}) FROM {schema}.{table} where {geo_col} is not NULL "
         if condition is not None:
-            query += f"AND {condition}"
+            query += f"AND {condition} "
         query += "LIMIT 1;"
 
         df = pd.read_sql(
@@ -130,21 +130,30 @@ class Tool:
         )
         return str(df["st_srid"].values[0])
 
+    def _get_proper_loader(self, geo_info: Optional[GeoInfo]) -> Callable[
+        [str, Optional[Sequence[str]], Optional[bool]], pd.DataFrame]:
+        if geo_info is not None:
+            loader = pdg.read_feather  # type: ignore
+        else:
+            loader = pd.read_feather  # type: ignore
+        return loader
+
     def fetch_query(
             self,
             query: str,
-            store_it: bool = True,
             geo_info: Optional[GeoInfo] = None,
             force_refetch: bool = False,
             params: Optional[Dict[str, Any]] = None,
+
     ) -> Union[pd.DataFrame, pdg.GeoDataFrame]:
         """Exécute une requête qui va chercher des données en base et les formatte en Geo/Dataframe.
 
         Args:
             query (str): Requête à exécuter. DOIT RETOURNER DES VALEURS
             storeIt (bool, optional): Stocker ou non le résultat en cache. Defaults to True.
-            geo_info (Optional[str], optional): informations sur la colonne contenant une géométrie,
-                            si elle existe. Nécessaire pour la charger correctement dans Geopandas.
+            geo_info (Optional[GeoInfo], optional): informations sur la colonne contenant une géométrie,
+                            si elle existe. Nécessaire pour la charger correctement dans Geopandas. Peut ajouter une
+                            condition sur les lignes (la restriction au code postal, par exemple).
             force_refetch (bool, optional): Ignore le cache. Defaults to False.
             params (Optional[Dict[str, Any]], optional): Paramètres de requêtes supplémentaires.
                                                          Defaults to None.
@@ -161,14 +170,11 @@ class Tool:
                     " informations so that I can get the right CRS."
                 )
             else:
-                crs = "EPSG:" + self._get_crs(geo_info.table, geo_info.column, schema=geo_info.schema)
+                crs = "EPSG:" + self._get_crs(geo_info.table, geo_info.column, schema=geo_info.schema,
+                                              condition=geo_info.condition)
                 logging.debug("Found CRS = %s", crs)
 
-        if geo_info is None:
-            _loader = pd.read_feather  # type: ignore
-        else:
-            _loader = pdg.read_feather  # type: ignore
-        _loader: Callable[[str, Optional[Sequence[str]], Optional[bool]], pd.DataFrame]
+        _loader = self._get_proper_loader(geo_info)
 
         _create_dir(self.tmp)
 
@@ -177,7 +183,7 @@ class Tool:
         loaded_from_server = False
 
         # Load
-        if store_it and os.path.exists(save_path) and not force_refetch:
+        if os.path.exists(save_path) and not force_refetch:
             df = _loader(save_path)  # type: ignore
         else:
             df = pd.read_sql(query, self._engine, params=params)
@@ -190,8 +196,7 @@ class Tool:
             df = df.drop([geo_info.column], axis=1)  # type: ignore
 
         # Save
-        if store_it and not df.empty:
-            df.to_feather(str(save_path))
+        df.to_feather(str(save_path))
 
         if df.empty:
             logging.warning("The dataframe from the following query was empty\n%s", query)
