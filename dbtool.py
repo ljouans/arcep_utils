@@ -169,6 +169,12 @@ class Tool:
                     "I strongly suggest you specify the name of the table containing the geographic"
                     " informations so that I can get the right CRS."
                 )
+            elif geo_info.condition is None:
+                logging.warning(
+                    "You specified the informations to retrieve the CRS info, but you did not "
+                    "provide any condition over the database. Are you sure the table is meant to be"
+                    "unfiltered?"
+                )
             else:
                 crs = "EPSG:" + self._get_crs(geo_info.table, geo_info.column, schema=geo_info.schema,
                                               condition=geo_info.condition)
