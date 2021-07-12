@@ -13,10 +13,6 @@ def test__get_crs():
     assert False
 
 
-def test_fetch_query():
-    assert False
-
-
 def test__connection_string_from_secret_file():
     db_secret = ExtendedDatabaseSecret(user='1', password='2', host='3', port='4', db='5')
     assert _connection_string_from_db_secret(db_secret) == 'postgresql://1:2@3:4/5'
@@ -80,3 +76,17 @@ def test_has_table():
     tool = Tool(secretPathFile=pth._get_tool_path() / 'tests/test_files/actually_secret/db.cfg')
     assert tool.has_table(table='immeuble', schema='base_infra')
     assert not tool.has_table(table='pas_immeuble', schema='base_infra')
+
+
+@pytest.mark.skip(reason='Trop lent. À lancer de temps en temps. Requiert Putty.')
+def test__get_crs():
+    tool = Tool(secretPathFile=pth._get_tool_path() / 'tests/test_files/actually_secret/db.cfg')
+    crs = tool._get_crs(table='immeuble', geo_col='geom', schema='base_infra', condition="code_insee = '71378'")
+    assert crs == '2154'
+
+    crs = tool._get_crs(table='immeuble', geo_col='geom', schema='base_infra', condition="code_insee = '97410'")
+    assert crs == '2975'
+
+
+def test_fetch_query():
+    assert False

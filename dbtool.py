@@ -118,10 +118,14 @@ class Tool:
         insp = sqa.inspect(self._engine)
         return insp.has_table(table, schema=schema)
 
-    def _get_crs(self, table_name: str, geo_col: str, schema: str) -> str:
+    def _get_crs(self, table: str, geo_col: str, schema: str, condition: Optional[str] = None) -> str:
+        query = f"SELECT ST_SRID({geo_col}) FROM {schema}.{table} where {geo_col} is not NULL "
+        if condition is not None:
+            query += f"AND {condition}"
+        query += "LIMIT 1;"
+
         df = pd.read_sql(
-            f"SELECT ST_SRID({geo_col}) FROM {schema}.{table_name} where {geo_col} is not NULL"
-            " LIMIT 1;",
+            query,
             self._engine,
         )
         return str(df["st_srid"].values[0])
