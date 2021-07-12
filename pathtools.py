@@ -52,6 +52,10 @@ def config_path() -> Path:
     path.mkdir(parents=True, exist_ok=True)
     return path
 
+def outer_path() -> Path:
+    path = _get_tool_path().parent.parent
+    path.mkdir(parents=True, exist_ok=True)
+    return path
 
 def outer_out_path() -> Path:
     """Chemin vers le dossier {ce fichier}/../../out/. Crée le dossier si nécessaire.
@@ -62,6 +66,8 @@ def outer_out_path() -> Path:
     path = _get_tool_path().parent.parent / "out"
     path.mkdir(parents=True, exist_ok=True)
     return path
+
+
 
 
 def outer_test_path() -> Path:
