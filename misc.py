@@ -177,3 +177,7 @@ def insee_department_from_city(insee_city: str) -> str:
     if dpt in {"97", "98"}:
         dpt = insee_city[:3]
     return dpt
+
+
+def is_drom(insee_city: str) -> bool:
+    return insee_city[:2] in {'97', '98'}
