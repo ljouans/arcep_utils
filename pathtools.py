@@ -1,6 +1,7 @@
+import hashlib
 import os
 from pathlib import Path
-from typing import Union, Optional
+from typing import Union, Optional, Any
 
 """
 Outils de manipulation et de gestion de chemin.
@@ -61,6 +62,10 @@ def outer_path() -> Path:
     path = _get_tool_path().parent.parent
     path.mkdir(parents=True, exist_ok=True)
     return path
+
+
+def hashname_from_file(data: Any) -> str:
+    return str(hashlib.md5(str(data).encode("UTF8")).hexdigest())
 
 
 def outer_out_path() -> Path:
