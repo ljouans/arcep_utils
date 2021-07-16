@@ -64,7 +64,7 @@ def outer_path() -> Path:
     return path
 
 
-def hashname_from_file(data: Any) -> str:
+def hashname_from_data(data: Any) -> str:
     return str(hashlib.md5(str(data).encode("UTF8")).hexdigest())
 
 
