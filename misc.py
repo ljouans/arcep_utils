@@ -179,5 +179,22 @@ def insee_department_from_city(insee_city: str) -> str:
     return dpt
 
 
-def is_drom(insee_city: str) -> bool:
-    return insee_city[:2] in {'97', '98'}
+def is_drom(insee_city: Optional[str] = None, insee_region: Optional[str] = None) -> bool:
+    if insee_city is not None:
+        return insee_city[:2] in {'97', '98'}
+    elif insee_region is not None:  # Les codes région ne suivent pas la nomenclature des codes département
+        return insee_region in {'01', '02', '03', '04', '06'}
+
+
+def convert_insee_drom_region_to_department(insee_region: str) -> str:
+    """
+    Convertis le code region des DROM au préfixe de département associé.
+    Args:
+        insee_region: Code INSEE de région
+
+    Returns:
+        le préfixe département du code INSEE.
+
+    """
+    mapping = {'01': '971', '02': '972', '03': '973', '06': '976'}
+    return mapping[insee_region]
