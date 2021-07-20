@@ -1,10 +1,10 @@
 import configparser
 from pathlib import Path
 from typing import List, NoReturn, Union
-from utils.config.InvalidValueException import InvalidValueError
 
 import utils.pathtools as pth
 from utils.argstruct.database_secret import DatabaseSecret
+from utils.config.InvalidValueException import InvalidValueError
 
 
 class ConfigManager(configparser.RawConfigParser):
@@ -68,8 +68,12 @@ class ConfigManager(configparser.RawConfigParser):
         return DatabaseSecret(user=user, password=pwd, host=host, port=port)
 
     @staticmethod
+    def db_secret_to_connection_string(db_secret: DatabaseSecret, base: str) -> str:
+        return f"postgresql://{db_secret.user}:{db_secret.password}@{db_secret.host}:{db_secret.port}/{base}"
+
+    @staticmethod
     def create_connection_string(
-        secret_file_path: Union[str, Path], millesime: str
+            secret_file_path: Union[str, Path], millesime: str
     ) -> str:
         """Raccourcis pour créer la chaine de connexion sqlalchemy à partir des
         paramètres.
