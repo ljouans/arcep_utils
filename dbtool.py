@@ -169,13 +169,14 @@ class Tool:
                     "I strongly suggest you specify the name of the table containing the geographic"
                     " informations so that I can get the right CRS."
                 )
-            elif geo_info.condition is None:
-                logging.warning(
-                    "You specified the informations to retrieve the CRS info, but you did not "
-                    "provide any condition over the database. Are you sure the table is meant to be"
-                    "unfiltered?"
-                )
             else:
+                if geo_info.condition is None:
+                    logging.warning(
+                        "You specified the informations to retrieve the CRS info, but you did not "
+                        "provide any condition over the database. Are you sure the table is meant to be"
+                        "unfiltered?"
+                    )
+
                 crs = "EPSG:" + self._get_crs(geo_info.table, geo_info.column, schema=geo_info.schema,
                                               condition=geo_info.condition)
                 logging.debug("Found CRS = %s", crs)
@@ -199,7 +200,8 @@ class Tool:
         if loaded_from_server and geo_info is not None:
             gk = pdg.GeoSeries.from_wkb(df[geo_info.column])  # type: ignore
             df = pdg.GeoDataFrame(df, geometry=gk, crs=crs)
-            df = df.drop([geo_info.column], axis=1)  # type: ignore
+            if geo_info.column != 'geometry':
+                df = df.drop([geo_info.column], axis=1)  # type: ignore
 
         # Save
         df.to_feather(str(save_path))
