@@ -183,7 +183,7 @@ class Tool:
 
         _loader = self._get_proper_loader(geo_info)
 
-        _create_dir(self.tmp)
+        _create_dir(self.tmp)  # TODO: RM
 
         eqry = str(query) + str(geo_info) + str(crs)
         save_path = self.tmp / (str(hashlib.md5(eqry.encode("UTF8")).hexdigest()) + ".fthr")
