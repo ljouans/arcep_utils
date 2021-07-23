@@ -8,5 +8,5 @@ class GeoInfo:
     """
     column: str
     table: str
-    schema: str = "test_loic"
+    schema: str
     condition: Optional[str] = None
