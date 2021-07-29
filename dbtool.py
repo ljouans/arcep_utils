@@ -4,7 +4,12 @@ import os
 import warnings
 from configparser import ConfigParser
 from pathlib import Path
-from typing import Any, Callable, Dict, Optional, Sequence, Union
+from typing import Any
+from typing import Callable
+from typing import Dict
+from typing import Optional
+from typing import Sequence
+from typing import Union
 
 import geopandas as pdg
 import pandas as pd
@@ -36,14 +41,15 @@ def _connection_string_from_secret_file(secret_path_file: Optional[Union[Path, s
     secretpath = Path(secret_path_file) if secret_path_file is not None else secretpath
     if not secretpath.exists():
         raise FileNotFoundError(
-            "Could not find the secret folder. Please specify the connexion secrets"
-        )
+                "Could not find the secret folder. Please specify the connexion secrets"
+                )
     _ = parser.read(secretpath)
     return _rm_string_marker(parser.get("database", "conn_string"))
 
 
 def _connection_string_from_db_secret(database_secret: ExtendedDatabaseSecret):
-    return f'postgresql://{database_secret.user}:{database_secret.password}@{database_secret.host}:{database_secret.port}/{database_secret.db}'
+    return f'postgresql://{database_secret.user}:{database_secret.password}@{database_secret.host}:' \
+           f'{database_secret.port}/{database_secret.db}'
 
 
 class Tool:
@@ -57,7 +63,7 @@ class Tool:
             secretPathFile: Optional[Union[Path, str]] = None,
             connection_string: Optional[str] = None,
             database_secret: Optional[ExtendedDatabaseSecret] = None
-    ):
+            ):
         if tmpDir is None:
             tmpDir = pth.tmp_path()
 
@@ -93,7 +99,7 @@ class Tool:
             secret_path_file: Optional[Union[str, Path]] = None,
             connection_string: Optional[str] = None,
             database_secret: Optional[ExtendedDatabaseSecret] = None,
-    ):
+            ):
         if connection_string is not None:
             pass
         elif database_secret is not None:
@@ -125,10 +131,13 @@ class Tool:
         query += "LIMIT 1;"
 
         df = pd.read_sql(
-            query,
-            self._engine,
-        )
-        return str(df["st_srid"].values[0])
+                query,
+                self._engine,
+                )
+        if not df.empty:
+            return str(df["st_srid"].values[0])
+        else:
+            return '4326'  # Pas de CRS. On se rabat sur un par défaut.
 
     def _get_proper_loader(self, geo_info: Optional[GeoInfo]) -> Callable[
         [str, Optional[Sequence[str]], Optional[bool]], pd.DataFrame]:
@@ -145,7 +154,7 @@ class Tool:
             force_refetch: bool = False,
             params: Optional[Dict[str, Any]] = None,
 
-    ) -> Union[pd.DataFrame, pdg.GeoDataFrame]:
+            ) -> Union[pd.DataFrame, pdg.GeoDataFrame]:
         """Exécute une requête qui va chercher des données en base et les formatte en Geo/Dataframe.
 
         Args:
@@ -166,16 +175,16 @@ class Tool:
         if geo_info is not None:
             if geo_info.schema is None:
                 logging.warning(
-                    "I strongly suggest you specify the name of the table containing the geographic"
-                    " informations so that I can get the right CRS."
-                )
+                        "I strongly suggest you specify the name of the table containing the geographic"
+                        " informations so that I can get the right CRS."
+                        )
             else:
                 if geo_info.condition is None:
                     logging.warning(
-                        "You specified the informations to retrieve the CRS info, but you did not "
-                        "provide any condition over the database. Are you sure the table is meant to be"
-                        "unfiltered?"
-                    )
+                            "You specified the informations to retrieve the CRS info, but you did not "
+                            "provide any condition over the database. Are you sure the table is meant to be"
+                            "unfiltered?"
+                            )
 
                 crs = "EPSG:" + self._get_crs(geo_info.table, geo_info.column, schema=geo_info.schema,
                                               condition=geo_info.condition)
@@ -204,9 +213,9 @@ class Tool:
                 df = df.drop([geo_info.column], axis=1)  # type: ignore
 
         # Save
-        df.to_feather(str(save_path))
-
         if df.empty:
             logging.warning("The dataframe from the following query was empty\n%s", query)
+        else:
+            df.to_feather(str(save_path))
 
         return df
