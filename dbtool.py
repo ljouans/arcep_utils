@@ -134,7 +134,10 @@ class Tool:
                 query,
                 self._engine,
                 )
-        return str(df["st_srid"].values[0])
+        if not df.empty:
+            return str(df["st_srid"].values[0])
+        else:
+            return '4326'  # Pas de CRS. On se rabat sur un par défaut.
 
     def _get_proper_loader(self, geo_info: Optional[GeoInfo]) -> Callable[
         [str, Optional[Sequence[str]], Optional[bool]], pd.DataFrame]:
@@ -188,7 +191,7 @@ class Tool:
 
         _loader = self._get_proper_loader(geo_info)
 
-        _create_dir(self.tmp)
+        _create_dir(self.tmp)  # TODO: RM
 
         eqry = str(query) + str(geo_info) + str(crs)
         save_path = self.tmp / (str(hashlib.md5(eqry.encode("UTF8")).hexdigest()) + ".fthr")
@@ -211,9 +214,11 @@ class Tool:
         # Save
         # df = df.reset_index()
         # FIXME: VERIFIER LES IMPACTS DE ÇA !
-        df.to_feather(str(save_path))
+        # df.to_feather(str(save_path))
 
         if df.empty:
             logging.warning("The dataframe from the following query was empty\n%s", query)
+        else:
+            df.to_feather(str(save_path))
 
         return df
