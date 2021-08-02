@@ -156,7 +156,6 @@ class Tool:
             geo_info: Optional[GeoInfo] = None,
             force_refetch: bool = False,
             params: Optional[Dict[str, Any]] = None,
-
             ) -> Union[pd.DataFrame, pdg.GeoDataFrame]:
         """Exécute une requête qui va chercher des données en base et les formatte en Geo/Dataframe.
 
@@ -216,6 +215,10 @@ class Tool:
                 df = df.drop([geo_info.column], axis=1)  # type: ignore
 
         # Save
+        # df = df.reset_index()
+        # FIXME: VERIFIER LES IMPACTS DE ÇA !
+        # df.to_feather(str(save_path))
+
         if df.empty:
             logging.warning("The dataframe from the following query was empty\n%s", query)
         else:
