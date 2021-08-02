@@ -3,7 +3,11 @@ import pickle
 import random
 import sys
 from pathlib import Path
-from typing import Any, Iterable, Optional, Sized, Union
+from typing import Any
+from typing import Iterable
+from typing import Optional
+from typing import Sized
+from typing import Union
 
 import tqdm
 
@@ -25,7 +29,7 @@ def save(
         filename: Optional[str] = None,
         basepath: Optional[Union[str, Path]] = None,
         filepath: Union[str, Path] = None,
-):
+        ):
     """Raccourcis pour sauvegarder des données en utilisant pickle.
 
     Args:
@@ -63,7 +67,7 @@ def make_iterator(
         size: Optional[int] = None,
         desc: str = "",
         leave: bool = False,
-) -> Any:
+        ) -> Any:
     """Raccourcis pour créer un itérateur avec TQDM seulement s'il est assez gros.
 
     Args:
