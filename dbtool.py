@@ -1,12 +1,14 @@
 import hashlib
 import logging
 import os
+import re
 import warnings
 from configparser import ConfigParser
 from pathlib import Path
 from typing import Any
 from typing import Callable
 from typing import Dict
+from typing import List
 from typing import Optional
 from typing import Sequence
 from typing import Union
@@ -15,6 +17,7 @@ import geopandas as pdg
 import pandas as pd
 import sqlalchemy as sqa
 from sqlalchemy import create_engine
+from sqlalchemy.engine import Inspector
 
 from . import pathtools as pth
 from .argstruct.database_secret import ExtendedDatabaseSecret
@@ -219,3 +222,32 @@ class Tool:
             df.to_feather(str(save_path))
 
         return df
+
+    def drop_table(self, regex: str, schema: str):
+        """
+        Supprime la ou les tables ciblées par l'expression régulière.
+
+        Args:
+            regex: expression régulière désignant les tables
+            schema: Schéma de travail
+
+        Returns:
+            La liste des tables supprimées.
+
+        """
+        engine = self.engine
+
+        inspector: Inspector = sqa.inspect(engine)
+
+        all_tables: List[str] = inspector.get_table_names(schema=schema)
+        pattern = re.compile(regex)
+        to_drop = []
+        for table in all_tables:
+            if pattern.search(table):
+                logging.debug(f'Dropping table {table}')
+                to_drop.append(f"{schema}.{table}")
+
+        if to_drop:  # != []:
+            engine.execute(f'DROP TABLE {", ".join(to_drop)};')
+        return to_drop
+

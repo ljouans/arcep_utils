@@ -1,0 +1,2 @@
+[database]
+conn_string=postgresql://{utilisateur}:{password}@{host}:{port}/{db}

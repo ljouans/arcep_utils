@@ -160,3 +160,15 @@ def test_fetch_query__pandas(mocker, local_tmp_path):
     df = tool.fetch_query(query='''SELECT * FROM base_infra.operateurs LIMIT 97''')
     assert df.shape == (97, 4)
     assert df[df['code_2d'] == 'DB'].code_l33_13.values[0] == 'DLFE'
+
+
+@pytest.mark.skip(reason='Requiert Putty.')
+def test_drop_table__integration():
+    tool = Tool(secretPathFile=pth._get_tool_path() / 'tests/test_files/actually_secret/db.cfg')
+    tool.fetch_query(query='DROP TABLE IF EXISTS loic._test_to_delete;'
+                           'create table loic._test_to_delete (dummy INTEGER NOT NULL PRIMARY KEY); '
+                           'select 1 from loic._test_to_delete limit 0;')
+
+    assert tool.has_table(table='_test_to_delete', schema='loic')
+    tool.drop_table('_test_to_delete', schema='loic')
+    assert not tool.has_table(table='_test_to_delete', schema='loic')
