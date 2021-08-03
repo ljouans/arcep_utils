@@ -57,7 +57,8 @@ def parse_ipe(ipe_zip_path: Union[str, Path], columns: List[str], numeric_cols: 
 
                     if has_all_cols or cols_are_optional:
                         dfs.append(df)
-        logger.debug('Done reading. Had %s issues. Could not read files : %s', len(file_issues), file_issues)
+        if len(file_issues) > 0:
+            logger.debug('Done reading. Had %s issues. Could not read files : %s', len(file_issues), file_issues)
 
     df_full = pd.concat(dfs)  # type: ignore
     df_full: pd.DataFrame
