@@ -1,3 +1,6 @@
+"""
+Outil de requêtes SQL en base, avec fonction de mise en cache des résultats.
+"""
 import hashlib
 import logging
 import os
@@ -86,6 +89,12 @@ class Tool:
 
     @property
     def engine(self):
+        """
+        Renvoi le moteur de connexion SQLAlchemy
+
+        Returns:
+            Le moteur de connexion
+        """
         return self._engine
 
     @property
@@ -175,22 +184,16 @@ class Tool:
 
         crs = None
         if geo_info is not None:
-            if geo_info.schema is None:
+            if geo_info.condition is None:
                 logging.warning(
-                        "I strongly suggest you specify the name of the table containing the geographic"
-                        " informations so that I can get the right CRS."
+                        "You specified the informations to retrieve the CRS info, but you did not "
+                        "provide any condition over the database. Are you sure the table is meant to be"
+                        "unfiltered?"
                         )
-            else:
-                if geo_info.condition is None:
-                    logging.warning(
-                            "You specified the informations to retrieve the CRS info, but you did not "
-                            "provide any condition over the database. Are you sure the table is meant to be"
-                            "unfiltered?"
-                            )
 
-                crs = "EPSG:" + self._get_crs(geo_info.table, geo_info.column, schema=geo_info.schema,
-                                              condition=geo_info.condition)
-                logging.debug("Found CRS = %s", crs)
+            crs = "EPSG:" + self._get_crs(geo_info.table, geo_info.column, schema=geo_info.schema,
+                                          condition=geo_info.condition)
+            logging.debug("Found CRS = %s", crs)
 
         _loader = self._get_proper_loader(geo_info)
 
@@ -253,4 +256,3 @@ class Tool:
         if to_drop:  # != []:
             engine.execute(f'DROP TABLE {", ".join(to_drop)};')
         return to_drop
-

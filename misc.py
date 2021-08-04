@@ -1,3 +1,6 @@
+"""
+Collection d'outils généraux.
+"""
 import os
 import pickle
 import random
@@ -184,6 +187,17 @@ def insee_department_from_city(insee_city: str) -> str:
 
 
 def is_drom(insee_city: Optional[str] = None, insee_region: Optional[str] = None) -> bool:
+    """
+    Est-ce que le code INSEE de la ville ou de la région correspond à un DROM ?
+
+    Args:
+        insee_city: Code INSEE de la ville
+        insee_region: Code INSEE de la région
+
+    Returns:
+        Vrai ssi le code INSE est un DROM
+
+    """
     if insee_city is not None:
         return insee_city[:2] in {'97', '98'}
     elif insee_region is not None:  # Les codes région ne suivent pas la nomenclature des codes département

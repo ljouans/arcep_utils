@@ -1,14 +1,23 @@
-import hashlib
-import os
-from pathlib import Path
-from typing import Union, Optional, Any
-
 """
 Outils de manipulation et de gestion de chemin.
 """
 
+import hashlib
+import os
+from pathlib import Path
+from typing import Any
+from typing import Optional
+from typing import Union
+
 
 def get_tool_path() -> Path:
+    """
+    Donne le chemin absolu vers le dossier contenant les outils.
+
+    Returns:
+        Path vers le dossier utils/
+
+    """
     return Path(os.path.realpath(__file__)).parent
 
 
@@ -65,6 +74,17 @@ def outer_path() -> Path:
 
 
 def hashname_from_data(data: Any) -> str:
+    """
+    Donne le haché des données en string python. Mauvais pour une utilisation classique du haché, mais utile pour des
+    noms de fichier.
+
+    Args:
+        data: Données à hacher
+
+    Returns:
+        Une chaine de caractères.
+
+    """
     return str(hashlib.md5(str(data).encode("UTF8")).hexdigest())
 
 
