@@ -63,19 +63,14 @@ class Tool:
     Outil de connexion et de requête en base, de chargement de geo/dataframe.
     """
 
-    def __init__(
-            self,
-            tmpDir: Optional[Path] = None,
-            secretPathFile: Optional[Union[Path, str]] = None,
-            connection_string: Optional[str] = None,
-            database_secret: Optional[ExtendedDatabaseSecret] = None
-            ):
-        if tmpDir is None:
-            tmpDir = pth.tmp_path()
-
-        self._tmp = tmpDir
+    def __init__(self,
+                 secret_path_file: Optional[Union[Path, str]] = None,
+                 connection_string: Optional[str] = None,
+                 database_secret: Optional[ExtendedDatabaseSecret] = None
+                 ):
+        self._tmp = pth.tmp_path()
         self._connexion_string = ""
-        self._engine = self._create_engine(secretPathFile, connection_string, database_secret)
+        self._engine = self._create_engine(secret_path_file, connection_string, database_secret)
 
     @property
     def tmp(self) -> Path:
@@ -136,10 +131,10 @@ class Tool:
         insp = sqa.inspect(self._engine)
         return insp.has_table(table, schema=schema)
 
-    def _get_crs(self, table: str, geo_col: str, schema: str, condition: Optional[str] = None) -> str:
-        query = f"SELECT ST_SRID({geo_col}) FROM {schema}.{table} where {geo_col} is not NULL "
-        if condition is not None:
-            query += f"AND {condition} "
+    def _get_crs(self, geo_info) -> str:
+        query = f"SELECT ST_SRID({geo_info.column}) FROM {geo_info.table_path} where {geo_info.column} is not NULL "
+        if geo_info.condition is not None:
+            query += f"AND {geo_info.condition} "
         query += "LIMIT 1;"
 
         df = pd.read_sql(
@@ -191,13 +186,10 @@ class Tool:
                         "unfiltered?"
                         )
 
-            crs = "EPSG:" + self._get_crs(geo_info.table, geo_info.column, schema=geo_info.schema,
-                                          condition=geo_info.condition)
+            crs = "EPSG:" + self._get_crs(geo_info)
             logging.debug("Found CRS = %s", crs)
 
         _loader = self._get_proper_loader(geo_info)
-
-        _create_dir(self.tmp)  # TODO: RM
 
         eqry = str(query) + str(geo_info) + str(crs)
         save_path = self.tmp / (str(hashlib.md5(eqry.encode("UTF8")).hexdigest()) + ".fthr")
@@ -218,10 +210,6 @@ class Tool:
                 df = df.drop([geo_info.column], axis=1)  # type: ignore
 
         # Save
-        # df = df.reset_index()
-        # FIXME: VERIFIER LES IMPACTS DE ÇA !
-        # df.to_feather(str(save_path))
-
         if df.empty:
             logging.warning("The dataframe from the following query was empty\n%s", query)
         else:
