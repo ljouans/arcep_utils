@@ -45,18 +45,17 @@ def save(
         pickle.dump(data, f)
 
 
-def load(filepath: CuPath = None, filename: CuPath = None, basepath: CuPath = None):
+def load(filepath: CuPath = None, filename: CuPath = None, base_path: CuPath = None):
     """Raccourcis pour charger des données en utilisant pickle.
 
     Args:
-        data (Any): Donnée à sauvegarder. 
         filename (Optional[str], optional): Nom de fichier. Defaults to None.
-        basepath (Optional[Union[str, Path]], optional): Dossier de sauvegarde. Si laissé à None
+        base_path (Optional[Union[str, Path]], optional): Dossier de sauvegarde. Si laissé à None
                 alors que filename est spécifié, utilisera {pathtools.data()}. Defaults to None.
         filepath (Union[str, Path], optional): Chemin complet du fichier de sauvegarde. Defaults
                 to None.
     """
-    path = _clean_path(filepath, basepath, filename)
+    path = _clean_path(filepath, base_path, filename)
     with open(str(path), "rb") as f:
         return pickle.load(f)
 
@@ -103,7 +102,7 @@ def first_file(rootpath: Union[str, Path]) -> Path:
     """
     iterator = os.walk(rootpath)
     e = next(iterator)
-    while e[2] == []:
+    while not e[2]:  # == []:
         e = next(iterator)
     return Path(e[0]) / e[2][0]
 
@@ -112,14 +111,15 @@ def nth_file(rootpath: Union[str, Path], n: int) -> Path:
     """Donne le n-ieme fichier d'une arborescence, en descendant en profondeur d'abord.
 
     Args:
-        rootpath (Union[str, Path]): chemin racine de recherche 
+        rootpath (Union[str, Path]): chemin racine de recherche
+        n (int): Numéro du fichier à prendre
 
     Returns:
         Path: Un chemin vers le fichier
     """
     iterator = os.walk(rootpath)
     e = next(iterator)
-    while e[2] == []:
+    while not e[2]:  # == []:
         e = next(iterator)
 
     return Path(e[0]) / e[2][n]
@@ -136,7 +136,7 @@ def random_first_file(rootpath: Union[str, Path]) -> Path:
     """
     iterator = os.walk(rootpath)
     e = next(iterator)
-    while e[2] == []:
+    while e[2]:  # == []:
         e = next(iterator)
 
     return Path(e[0]) / e[2][random.randint(0, len(e[2]))]
@@ -158,7 +158,7 @@ def iterate_files(rootpath: Union[str, Path]) -> Iterable[Path]:
 
     e = next(iterator, None)
     while e is not None:
-        while e[2] == []:
+        while e[2]:  # == []:
             e = next(iterator)
 
         i = 0

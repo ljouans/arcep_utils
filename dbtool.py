@@ -40,7 +40,7 @@ def _rm_string_marker(string: str) -> str:
 
 def _connection_string_from_secret_file(secret_path_file: Optional[Union[Path, str]] = None):
     parser = ConfigParser()
-    secretpath = pth._get_tool_path() / "secret/db.cfg"  # Pour la rétro-compatibilité
+    secretpath = pth.get_tool_path() / "secret/db.cfg"  # Pour la rétro-compatibilité
     secretpath = Path(secret_path_file) if secret_path_file is not None else secretpath
     if not secretpath.exists():
         raise FileNotFoundError(
@@ -142,7 +142,8 @@ class Tool:
         else:
             return '4326'  # Pas de CRS. On se rabat sur un par défaut.
 
-    def _get_proper_loader(self, geo_info: Optional[GeoInfo]) -> Callable[
+    @staticmethod
+    def _get_proper_loader(geo_info: Optional[GeoInfo]) -> Callable[
         [str, Optional[Sequence[str]], Optional[bool]], pd.DataFrame]:
         if geo_info is not None:
             loader = pdg.read_feather  # type: ignore
@@ -161,7 +162,6 @@ class Tool:
 
         Args:
             query (str): Requête à exécuter. DOIT RETOURNER DES VALEURS
-            storeIt (bool, optional): Stocker ou non le résultat en cache. Defaults to True.
             geo_info (Optional[GeoInfo], optional): informations sur la colonne contenant une géométrie,
                             si elle existe. Nécessaire pour la charger correctement dans Geopandas. Peut ajouter une
                             condition sur les lignes (la restriction au code postal, par exemple).

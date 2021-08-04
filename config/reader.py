@@ -1,6 +1,8 @@
 import configparser
 from pathlib import Path
-from typing import List, NoReturn, Union
+from typing import List
+from typing import NoReturn
+from typing import Union
 
 import utils.pathtools as pth
 from utils.argstruct.database_secret import DatabaseSecret
@@ -15,11 +17,11 @@ class ConfigManager(configparser.RawConfigParser):
     def __init__(self):
         super().__init__()
         self.read(
-            [
-                pth.outer_out_path() / "base.cfg",
-                pth.outer_out_path() / "run.cfg",
-            ]
-        )
+                [
+                    pth.outer_out_path() / "base.cfg",
+                    pth.outer_out_path() / "run.cfg",
+                    ]
+                )
 
     def getlist(self, section: str, key: str) -> List[str]:
         """Lis le paramètre de configuration comme une liste python.
@@ -53,8 +55,8 @@ class ConfigManager(configparser.RawConfigParser):
         """
         # TODO: Add expected result config
         raise InvalidValueError(
-            "Wrong parameter in config file", section, key, value
-        )
+                "Wrong parameter in config file", section, key, value
+                )
 
     @staticmethod
     def load_db_secret(secret_file_path: Union[str, Path]) -> DatabaseSecret:
@@ -69,17 +71,26 @@ class ConfigManager(configparser.RawConfigParser):
 
     @staticmethod
     def db_secret_to_connection_string(db_secret: DatabaseSecret, base: str) -> str:
+        """
+        Créé la chaine de connexion à partir de la structure de donnée `DatabaseSecret`
+
+        Args:
+            db_secret: Secrets de connexion
+            base: Nom de la base à laquelle se connecter
+
+        Returns:
+            La chaine de caractère de connexion.
+
+        """
         return f"postgresql://{db_secret.user}:{db_secret.password}@{db_secret.host}:{db_secret.port}/{base}"
 
     @staticmethod
-    def create_connection_string(
-            secret_file_path: Union[str, Path], millesime: str
-    ) -> str:
+    def create_connection_string(secret_file_path: Union[str, Path], millesime: str) -> str:
         """Raccourcis pour créer la chaine de connexion sqlalchemy à partir des
         paramètres.
 
         Args:
-            secretFilePath (Union[str, Path]): Chemin vers le fichier de secret
+            secret_file_path (Union[str, Path]): Chemin vers le fichier de secret
             millesime (str): Millésime de base auquel se connecter
 
         Returns:

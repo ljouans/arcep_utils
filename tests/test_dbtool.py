@@ -11,8 +11,10 @@ from pytest_mock import MockerFixture
 import utils.pathtools as pth
 from utils.argstruct.database_secret import ExtendedDatabaseSecret
 from utils.argstruct.geo_table_info import GeoInfo
-from utils.dbtool import _connection_string_from_db_secret, _connection_string_from_secret_file, _rm_string_marker, Tool
-
+from utils.dbtool import Tool
+from utils.dbtool import _connection_string_from_db_secret
+from utils.dbtool import _connection_string_from_secret_file
+from utils.dbtool import _rm_string_marker
 
 
 def test__connection_string_from_secret_file():
@@ -26,7 +28,8 @@ def this_folder():
 
 
 def test__connection_string_from_db_secret__find_content_from_user_path(this_folder: Path):
-    assert _connection_string_from_secret_file(this_folder / 'test_files/config.cfg') == 'this_is_totally_a_connection_string'
+    assert _connection_string_from_secret_file(this_folder / 'test_files/config.cfg') == \
+           'this_is_totally_a_connection_string'
 
 
 def test__connection_string_from_db_secret__find_content_from_default_path(mocker: MockerFixture, this_folder: Path):
@@ -41,7 +44,7 @@ def test__connection_string_from_db_secret__find_content_from_default_path(mocke
     ('text\'', "text'"),
     ('"text\'', "\"text'"),
     ('text', 'text'),
-])
+    ])
 def test__rm_string_marker(string, expected):
     assert _rm_string_marker(string) == expected
 
@@ -55,7 +58,7 @@ def test__rm_string_marker(string, expected):
     (None, None, 'Secret File', 'Secret File'),
     ('Connection String', ExtendedDatabaseSecret(user='1', password='2', host='3', port='4', db='5'), 'Secret File',
      'Connection String'),
-])
+    ])
 def test__create_engine__with_string(mocker, connstring, dbsecret, secretfile, expected):
     nop = lambda x: x
     mocker.patch('utils.dbtool.create_engine', new=nop)
@@ -68,21 +71,21 @@ def test__create_engine__with_string(mocker, connstring, dbsecret, secretfile, e
 
 @pytest.mark.skip(reason='Trop lent. À lancer de temps en temps. Requiert Putty.')
 def test__create_engine__real_connexion():
-    tool = Tool(secretPathFile=pth._get_tool_path() / 'tests/test_files/actually_secret/db.cfg')
+    tool = Tool(secretPathFile=pth.get_tool_path() / 'tests/test_files/actually_secret/db.cfg')
     tool.engine.connect()
     assert True
 
 
 @pytest.mark.skip(reason='Trop lent. À lancer de temps en temps. Requiert Putty.')
 def test_has_table():
-    tool = Tool(secretPathFile=pth._get_tool_path() / 'tests/test_files/actually_secret/db.cfg')
+    tool = Tool(secretPathFile=pth.get_tool_path() / 'tests/test_files/actually_secret/db.cfg')
     assert tool.has_table(table='immeuble', schema='base_infra')
     assert not tool.has_table(table='pas_immeuble', schema='base_infra')
 
 
 @pytest.mark.skip(reason='Trop lent. À lancer de temps en temps. Requiert Putty.')
 def test__get_crs():
-    tool = Tool(secretPathFile=pth._get_tool_path() / 'tests/test_files/actually_secret/db.cfg')
+    tool = Tool(secretPathFile=pth.get_tool_path() / 'tests/test_files/actually_secret/db.cfg')
     crs = tool._get_crs(table='immeuble', geo_col='geom', schema='base_infra', condition="code_insee = '71378'")
     assert crs == '2154'
 
@@ -90,10 +93,9 @@ def test__get_crs():
     assert crs == '2975'
 
 
-
 @pytest.fixture
 def local_tmp_path():
-    local_tmp = pth._get_tool_path() / 'tests/tmp'
+    local_tmp = pth.get_tool_path() / 'tests/tmp'
     local_tmp.mkdir(parents=True, exist_ok=True)
 
     yield local_tmp
@@ -143,9 +145,8 @@ def test_fetch_query__saving(mocker: MockerFixture, local_tmp_path: Path):
 @pytest.mark.skip(reason="Lent. À lancer de temps en temps. Requiert la connexion Putty")
 def test_fetch_query__geopandas(mocker: MockerFixture, local_tmp_path):
     mocker.patch('utils.dbtool.pth.tmp_path', return_value=local_tmp_path)
-    tool = Tool(secretPathFile=pth._get_tool_path() / 'tests/test_files/actually_secret/db.cfg')
-    geo_info = GeoInfo(schema='base_infra', table='immeuble', column='geom',
-                       condition="code_insee = '71378'")
+    tool = Tool(secretPathFile=pth.get_tool_path() / 'tests/test_files/actually_secret/db.cfg')
+    geo_info = GeoInfo(table_path='base_infra.immeuble', column='geom', condition="code_insee = '71378'")
     df = tool.fetch_query(query='''SELECT * FROM base_infra.immeuble where code_insee = '71378' limit 97''',
                           geo_info=geo_info)
     assert 'geometry' in df.columns
@@ -156,7 +157,7 @@ def test_fetch_query__geopandas(mocker: MockerFixture, local_tmp_path):
 @pytest.mark.skip(reason="Lent. À lancer de temps en temps. Requiert la connexion Putty")
 def test_fetch_query__pandas(mocker, local_tmp_path):
     mocker.patch('utils.dbtool.pth.tmp_path', return_value=local_tmp_path)
-    tool = Tool(secretPathFile=pth._get_tool_path() / 'tests/test_files/actually_secret/db.cfg')
+    tool = Tool(secretPathFile=pth.get_tool_path() / 'tests/test_files/actually_secret/db.cfg')
     df = tool.fetch_query(query='''SELECT * FROM base_infra.operateurs LIMIT 97''')
     assert df.shape == (97, 4)
     assert df[df['code_2d'] == 'DB'].code_l33_13.values[0] == 'DLFE'
@@ -164,7 +165,7 @@ def test_fetch_query__pandas(mocker, local_tmp_path):
 
 @pytest.mark.skip(reason='Requiert Putty.')
 def test_drop_table__integration():
-    tool = Tool(secretPathFile=pth._get_tool_path() / 'tests/test_files/actually_secret/db.cfg')
+    tool = Tool(secretPathFile=pth.get_tool_path() / 'tests/test_files/actually_secret/db.cfg')
     tool.fetch_query(query='DROP TABLE IF EXISTS loic._test_to_delete;'
                            'create table loic._test_to_delete (dummy INTEGER NOT NULL PRIMARY KEY); '
                            'select 1 from loic._test_to_delete limit 0;')
