@@ -1,7 +1,10 @@
 import logging
 import zipfile
 from pathlib import Path
-from typing import IO, List, Optional, Union
+from typing import IO
+from typing import List
+from typing import Optional
+from typing import Union
 
 import pandas as pd
 import tqdm
@@ -13,14 +16,19 @@ logger = logging.getLogger(__name__)
 
 
 def _read_single_ipe_file(filelike: IO[bytes], cols: Optional[List[str]] = None,
-                          nrows: Optional[int] = None) -> pd.DataFrame:
+                          nrows: Optional[int] = None
+                          ) -> pd.DataFrame:
     all_encodings = ['UTF-8', 'Windows-1252', 'Latin-1']
 
     df = pd.DataFrame()
     for encoding in all_encodings:
         try:
-            take_col = lambda c: c in cols
-            df = pd.read_csv(filelike, sep=';', decimal=',', encoding=encoding, usecols=take_col, dtype=str,
+            df = pd.read_csv(filelike,
+                             sep=';',
+                             decimal=',',
+                             encoding=encoding,
+                             usecols=lambda c: c in cols,
+                             dtype=str,
                              nrows=nrows)  # type: ignore
 
             if df.shape[1] > 0:
@@ -34,13 +42,15 @@ def _read_single_ipe_file(filelike: IO[bytes], cols: Optional[List[str]] = None,
     return df
 
 
-def _type_df(df: pd.DataFrame, numeric_cols: List[str] = []):
-    for col in numeric_cols:
-        df.loc[:, col] = pd.to_numeric(df[col], errors='coerce')
+def _type_df(df: pd.DataFrame, numeric_cols: List[str] = None):
+    if numeric_cols is not None:
+        for col in numeric_cols:
+            df.loc[:, col] = pd.to_numeric(df[col], errors='coerce')
 
 
 def parse_ipe(ipe_zip_path: Union[str, Path], columns: List[str], numeric_cols: List[str] = None,
-              cols_are_optional: bool = True, _test_nrows: int = None):
+              cols_are_optional: bool = True, _test_nrows: int = None
+              ):
     with zipfile.ZipFile(ipe_zip_path) as z:
         file_issues = []
         dfs = []
@@ -71,12 +81,14 @@ def parse_ipe(ipe_zip_path: Union[str, Path], columns: List[str], numeric_cols: 
 
 
 def _read_all_ipe(columns: List[str], numeric_cols: List[str] = None, cols_are_optional: bool = True,
-                  _test_nrows: int = None):
+                  _test_nrows: int = None
+                  ):
     """
     Lis tous les IPE de l'archive pointée.
     - columns: liste des colonnes à charger
     - numeric_cols: liste des colonnes numériques. Doit aussi apparaitre dans columns
-    - cols_are_optional: Si vrai (par défaut), le fichier est chargé même s'il manque des colonnes. Si faux, ne charge pas les fichiers où il manque des colonnes.
+    - cols_are_optional: Si vrai (par défaut), le fichier est chargé même s'il manque des colonnes. Si faux,
+    ne charge pas les fichiers où il manque des colonnes.
 
     Le scripts notifie l'utilisateur des fichiers où il a eu des problèmes de chargement.
     Cela inclus 
@@ -114,14 +126,16 @@ def _read_all_ipe(columns: List[str], numeric_cols: List[str] = None, cols_are_o
 
 
 def read_single_ipe(ipe_name: str, columns: List[str], numeric_cols: List[str] = None,
-                    zipfilepath: Optional[Union[str, Path]] = None, _test_nrows: int = None):
+                    zipfilepath: Optional[Union[str, Path]] = None, _test_nrows: int = None
+                    ):
     """Lis un IPE spécifique dans l'archive IPE_t1_2021_corrige.zip si aucune autre n'est spécifiée.
 
     Args:
         ipe_name (str): nom du fichier à lire
         columns (List[str]): Colonnes à garder
         numeric_cols (List[str], optional): Colonnes contenant des nombres. Defaults to None.
-        zipfilepath (Optional[Union[str, Path]], optional): chemin vers une archive autre que 'IPE_t1_2021_corrige.zip. Defaults to None.
+        zipfilepath (Optional[Union[str, Path]], optional): chemin vers une archive autre que
+        'IPE_t1_2021_corrige.zip. Defaults to None.
         _test_nrows (int, optional): Valeur de test. Limite la lecture de l'IPE à _test_nrows lignes. Defaults to None.
 
     Returns:
@@ -142,9 +156,3 @@ def read_single_ipe(ipe_name: str, columns: List[str], numeric_cols: List[str] =
 
 def stem_to_interop(stem: str) -> str:
     return stem.split('_')[2]
-
-
-if __name__ == '__main__':
-    df = read_all_ipe(columns=['CodeInseeImmeuble', 'EtatPM', 'EtatImmeuble', 'NombreLogementsAdresseIPE', 'TypePBO',
-                               'TypeRaccoPBPTO', 'CodeOI'],
-                      numeric_cols=['NombreLogementsAdresseIPE'])
