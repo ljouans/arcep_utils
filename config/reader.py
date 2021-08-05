@@ -36,7 +36,9 @@ class ConfigManager(configparser.RawConfigParser):
             List[str]: Liste des paramètres lus.
         """
         elems = self.get(section, key)
-        return [e.strip() for e in elems.split(',')]
+        lst = [e.strip() for e in elems.split(',')]
+        lst = list(filter(lambda x: x != '', lst))
+        return lst
 
     @staticmethod
     def invalid_value(section: str, key: str, value: str) -> NoReturn:
