@@ -86,7 +86,7 @@ def test_has_table():
 @pytest.mark.skip(reason='Trop lent. À lancer de temps en temps. Requiert Putty.')
 def test__get_crs():
     tool = Tool(secret_path_file=pth.get_tool_path() / 'tests/test_files/actually_secret/db.cfg')
-    geo_info = GeoInfo(table_path='base_infra.immeuble', column='geom',  condition="code_insee = '71378'")
+    geo_info = GeoInfo(table_path='base_infra.immeuble', column='geom', condition="code_insee = '71378'")
     crs = tool._get_crs(geo_info)
     assert crs == '2154'
 
@@ -121,12 +121,9 @@ def test_fetch_query__warning_empty_df(mocker: MockerFixture, local_tmp_path: Pa
 
 
 def test_fetch_query__saving(mocker: MockerFixture, local_tmp_path: Path):
-    first_arg = lambda *x: x[0]
-    nop = lambda x: ()
-
-    mocker.patch('utils.dbtool.pth.tmp_path', return_value=local_tmp_path)
-    mocker.patch('utils.dbtool.Tool._create_engine', new=first_arg)
-    mocker.patch('utils.dbtool._create_dir', new=nop)
+    mocker.patch('utils.dbtool.pth.tmp_path', return_value=lambda *x: x[0])
+    mocker.patch('utils.dbtool.Tool._create_engine', new=lambda *x: x[0])
+    mocker.patch('utils.dbtool._create_dir', new=lambda x: ())
     read_sql_mock = mocker.patch('utils.dbtool.pd.read_sql',
                                  new=mocker.MagicMock(return_value=pd.DataFrame(data={'a': [1, 2, 3]})))
 
