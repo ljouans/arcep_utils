@@ -147,8 +147,7 @@ class Tool:
             return '4326'  # Pas de CRS. On se rabat sur un par défaut.
 
     @staticmethod
-    def _get_proper_loader(geo_info: Optional[GeoInfo]) -> Callable[
-        [str, Optional[Sequence[str]], Optional[bool]], pd.DataFrame]:
+    def _get_proper_loader(geo_info: Optional[GeoInfo]):
         if geo_info is not None:
             loader = pdg.read_feather  # type: ignore
         else:
