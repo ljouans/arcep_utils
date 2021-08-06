@@ -128,6 +128,7 @@ class Tool:
         Returns:
             bool: True ssi la table existe
         """
+        # TODO: merge path
         insp = sqa.inspect(self._engine)
         return insp.has_table(table, schema=schema)
 
@@ -217,7 +218,7 @@ class Tool:
 
         return df
 
-    def drop_table(self, regex: str, schema: str):
+    def drop_table(self, regex: str, schema: str) -> List[str]:
         """
         Supprime la ou les tables ciblées par l'expression régulière.
 
