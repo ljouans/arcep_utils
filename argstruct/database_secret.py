@@ -1,8 +1,7 @@
-from dataclasses import dataclass
-
 """
 Structure enrobant les secrets de connexion à la base de donnée
 """
+from dataclasses import dataclass
 
 
 @dataclass
