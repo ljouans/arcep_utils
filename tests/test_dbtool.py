@@ -60,9 +60,8 @@ def test__rm_string_marker(string, expected):
      'Connection String'),
     ])
 def test__create_engine__with_string(mocker, connstring, dbsecret, secretfile, expected):
-    nop = lambda x: x
-    mocker.patch('utils.dbtool.create_engine', new=nop)
-    mocker.patch('utils.dbtool._connection_string_from_secret_file', new=nop)
+    mocker.patch('utils.dbtool.create_engine', new=lambda x: x)
+    mocker.patch('utils.dbtool._connection_string_from_secret_file', new=lambda x: x)
     tool = Tool()
     not_engine = tool._create_engine(connection_string=connstring, database_secret=dbsecret,
                                      secret_path_file=secretfile)
@@ -106,12 +105,11 @@ def local_tmp_path():
 
 
 def test_fetch_query__warning_empty_df(mocker: MockerFixture, local_tmp_path: Path, caplog):
-    nop = lambda *x: ()
 
     caplog.set_level(logging.WARNING)
     mocker.patch('utils.dbtool.pth.tmp_path', return_value=local_tmp_path)
-    mocker.patch('utils.dbtool.Tool._create_engine', new=nop)
-    mocker.patch('utils.dbtool._create_dir', new=nop)
+    mocker.patch('utils.dbtool.Tool._create_engine', new=lambda x: x)
+    mocker.patch('utils.dbtool._create_dir', new=lambda x: x)
     mocker.patch('utils.dbtool.pd.read_sql', new=mocker.MagicMock(return_value=pd.DataFrame().reset_index()))
 
     tool = Tool()
@@ -121,12 +119,10 @@ def test_fetch_query__warning_empty_df(mocker: MockerFixture, local_tmp_path: Pa
 
 
 def test_fetch_query__saving(mocker: MockerFixture, local_tmp_path: Path):
-    first_arg = lambda *x: x[0]
-    nop = lambda x: ()
 
     mocker.patch('utils.dbtool.pth.tmp_path', return_value=local_tmp_path)
-    mocker.patch('utils.dbtool.Tool._create_engine', new=first_arg)
-    mocker.patch('utils.dbtool._create_dir', new=nop)
+    mocker.patch('utils.dbtool.Tool._create_engine', new=lambda *x: x[0])
+    mocker.patch('utils.dbtool._create_dir', new=lambda x: ())
     read_sql_mock = mocker.patch('utils.dbtool.pd.read_sql',
                                  new=mocker.MagicMock(return_value=pd.DataFrame(data={'a': [1, 2, 3]})))
 
