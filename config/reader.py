@@ -1,4 +1,5 @@
 import configparser
+import glob
 from pathlib import Path
 from typing import List
 from typing import NoReturn
@@ -16,12 +17,9 @@ class ConfigManager(configparser.RawConfigParser):
 
     def __init__(self):
         super().__init__()
-        self.read(
-                [
-                    pth.outer_out_path() / "base.cfg",
-                    pth.outer_out_path() / "run.cfg",
-                    ]
-                )
+        bases = glob.glob(str(pth.outer_out_path()) + '/base*.cfg')
+        runs = glob.glob(str(pth.outer_out_path()) + '/run*.cfg')
+        self.read(bases + runs)
 
     def getlist(self, section: str, key: str) -> List[str]:
         """Lis le paramètre de configuration comme une liste python.
