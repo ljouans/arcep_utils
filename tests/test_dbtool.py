@@ -60,9 +60,8 @@ def test__rm_string_marker(string, expected):
      'Connection String'),
     ])
 def test__create_engine__with_string(mocker, connstring, dbsecret, secretfile, expected):
-    nop = lambda x: x
-    mocker.patch('utils.dbtool.create_engine', new=nop)
-    mocker.patch('utils.dbtool._connection_string_from_secret_file', new=nop)
+    mocker.patch('utils.dbtool.create_engine', new=lambda x: x)
+    mocker.patch('utils.dbtool._connection_string_from_secret_file', new=lambda x: x)
     tool = Tool()
     not_engine = tool._create_engine(connection_string=connstring, database_secret=dbsecret,
                                      secret_path_file=secretfile)
