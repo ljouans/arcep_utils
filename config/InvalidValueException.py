@@ -1,6 +1,3 @@
-from typing import List
-
-
 class InvalidValueError(ValueError):
     """Erreur: paramètre invalide lu dans la configuration
     """
@@ -16,4 +13,3 @@ class InvalidValueError(ValueError):
         self.section = section
         self.key = key
         self.given_value = given_value
-        self.expected_values = expected_values

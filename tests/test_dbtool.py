@@ -85,7 +85,7 @@ def test_has_table():
 @pytest.mark.skip(reason='Trop lent. À lancer de temps en temps. Requiert Putty.')
 def test__get_crs():
     tool = Tool(secret_path_file=pth.get_tool_path() / 'tests/test_files/actually_secret/db.cfg')
-    geo_info = GeoInfo(table_path='base_infra.immeuble', column='geom',  condition="code_insee = '71378'")
+    geo_info = GeoInfo(table_path='base_infra.immeuble', column='geom', condition="code_insee = '71378'")
     crs = tool._get_crs(geo_info)
     assert crs == '2154'
 

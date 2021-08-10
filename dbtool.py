@@ -9,11 +9,9 @@ import warnings
 from configparser import ConfigParser
 from pathlib import Path
 from typing import Any
-from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Sequence
 from typing import Union
 
 import geopandas as pdg
@@ -128,6 +126,7 @@ class Tool:
         Returns:
             bool: True ssi la table existe
         """
+        # TODO: merge path
         insp = sqa.inspect(self._engine)
         return insp.has_table(table, schema=schema)
 
@@ -216,7 +215,7 @@ class Tool:
 
         return df
 
-    def drop_table(self, regex: str, schema: str):
+    def drop_table(self, regex: str, schema: str) -> List[str]:
         """
         Supprime la ou les tables ciblées par l'expression régulière.
 
