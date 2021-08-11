@@ -1,3 +1,6 @@
+"""
+Ajoute l'option `--no-skip` pour ignorer l'instruction `skip` des tests.
+"""
 import os
 import pathlib
 import shutil

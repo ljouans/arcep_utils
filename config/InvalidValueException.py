@@ -2,13 +2,12 @@ class InvalidValueError(ValueError):
     """Erreur: paramètre invalide lu dans la configuration
     """
 
-    def __init__(
-            self,
-            message: str,
-            section: str,
-            key: str,
-            given_value: str,
-            ):
+    def __init__(self,
+                 message: str,
+                 section: str,
+                 key: str,
+                 given_value: str,
+                 ):
         super().__init__(message)
 
         self.section = section

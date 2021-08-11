@@ -18,7 +18,7 @@ import geopandas as pdg
 import pandas as pd
 import sqlalchemy as sqa
 from sqlalchemy import create_engine
-from sqlalchemy.engine import Inspector
+from sqlalchemy.engine.reflection import Inspector
 
 from . import misc
 from . import pathtools
