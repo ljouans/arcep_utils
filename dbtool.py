@@ -20,6 +20,8 @@ import sqlalchemy as sqa
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Inspector
 
+from . import misc
+from . import pathtools
 from . import pathtools as pth
 from .argstruct.database_secret import ExtendedDatabaseSecret
 from .argstruct.geo_table_info import GeoInfo
@@ -126,9 +128,19 @@ class Tool:
         Returns:
             bool: True ssi la table existe
         """
-        # TODO: merge path
-        insp = sqa.inspect(self._engine)
-        return insp.has_table(table, schema=schema)
+        # TODO: TEST
+        # TODO: merge paths
+        qr = f"does_table_{schema}.{table}_exist?"
+        answer_path = self.tmp / (pathtools.hashname_from_data(qr) + '.pkl')
+
+        if answer_path.exists():
+            answer = misc.load(filepath=answer_path)
+        else:
+            insp = sqa.inspect(self._engine)
+            answer = insp.has_table(table, schema=schema)
+            misc.save(data=answer, filepath=answer_path)
+
+        return answer
 
     def _get_crs(self, geo_info) -> str:
         query = f"SELECT ST_SRID({geo_info.column}) FROM {geo_info.table_path} where {geo_info.column} is not NULL "
