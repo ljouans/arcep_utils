@@ -118,7 +118,7 @@ class Tool:
         engine = create_engine(connection_string)
         return engine
 
-    def has_table(self, table: str, schema: str) -> bool:
+    def has_table(self, table: str, schema: str, force_refetch:bool = True) -> bool:
         """Teste si <schema>.<table_name> existe dans la base cible
 
         Args:
@@ -133,7 +133,7 @@ class Tool:
         qr = f"does_table_{schema}.{table}_exist?"
         answer_path = self.tmp / (pathtools.hashname_from_data(qr) + '.pkl')
 
-        if answer_path.exists():
+        if not force_refetch and answer_path.exists():
             answer = misc.load(filepath=answer_path)
         else:
             insp = sqa.inspect(self._engine)
