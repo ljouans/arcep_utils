@@ -1,7 +1,6 @@
 import configparser
 import glob
 from pathlib import Path
-from typing import List
 from typing import NoReturn
 from typing import Union
 
@@ -10,33 +9,39 @@ from utils.argstruct.database_secret import DatabaseSecret
 from utils.config.InvalidValueException import InvalidValueError
 
 
+def _list_converter(elems: str):
+    lst = [e.strip() for e in elems.split(',')]
+    lst = list(filter(lambda x: x != '', lst))
+    return lst
+
+
 class ConfigManager(configparser.RawConfigParser):
     """Lecteur de configuration. Cherche le fichier base.cfg et run.cfg.
     Le second prends la précedence sur le premier.
     """
 
     def __init__(self):
-        super().__init__()
+        super().__init__(converters={'list': _list_converter})
         bases = glob.glob(str(pth.outer_out_path()) + '/base*.cfg')
         runs = glob.glob(str(pth.outer_out_path()) + '/run*.cfg')
         self.read(bases + runs)
 
-    def getlist(self, section: str, key: str) -> List[str]:
-        """Lis le paramètre de configuration comme une liste python.
-        Utilise un parser json. Se heurtera aux problèmes inhérents du JSON 
-        (mauvais caractères par exepmle).
-
-        Args:
-            section (str): Section de configuration
-            key (str): clef de configuration
-
-        Returns:
-            List[str]: Liste des paramètres lus.
-        """
-        elems = self.get(section, key)
-        lst = [e.strip() for e in elems.split(',')]
-        lst = list(filter(lambda x: x != '', lst))
-        return lst
+    # def getlist(self, section: str, key: str) -> List[str]:
+    #     """Lis le paramètre de configuration comme une liste python.
+    #     Utilise un parser json. Se heurtera aux problèmes inhérents du JSON
+    #     (mauvais caractères par exepmle).
+    #
+    #     Args:
+    #         section (str): Section de configuration
+    #         key (str): clef de configuration
+    #
+    #     Returns:
+    #         List[str]: Liste des paramètres lus.
+    #     """
+    #     elems = self.get(section, key)
+    #     lst = [e.strip() for e in elems.split(',')]
+    #     lst = list(filter(lambda x: x != '', lst))
+    #     return lst
 
     @staticmethod
     def invalid_value(section: str, key: str, value: str) -> NoReturn:
