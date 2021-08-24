@@ -118,10 +118,11 @@ class Tool:
         engine = create_engine(connection_string)
         return engine
 
-    def has_table(self, table: str, schema: str, force_refetch:bool = True) -> bool:
+    def has_table(self, table: str, schema: str, force_refetch: bool = True) -> bool:
         """Teste si <schema>.<table_name> existe dans la base cible
 
         Args:
+            force_refetch: Si faux, mets en cache la réponse. Très mauvaise idée, à supprimer
             table (str): nom de table
             schema (str): nom du schema
 
