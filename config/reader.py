@@ -23,7 +23,7 @@ class ConfigManager(configparser.RawConfigParser):
     def __init__(self):
         super().__init__(converters={'list': _list_converter})
         # bases = glob.glob(str(pth.outer_out_path()) + '/base*.cfg')
-        bases = [str(pth.outer_out_path() / 'config.template')]
+        bases = [str(pth.outer_out_path() / 'configuration.template')]
         runs = glob.glob(str(pth.outer_out_path()) + '/run*.cfg')
         self.read(bases + runs)
 
