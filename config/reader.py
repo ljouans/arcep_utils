@@ -1,3 +1,8 @@
+"""
+Wrapper de la classe configparser de la bibliothèque standard pour
+- lire mes fichiers de config
+- ajouter la fonction de parsing des listes
+"""
 import configparser
 import glob
 from pathlib import Path
@@ -66,6 +71,16 @@ class ConfigManager(configparser.RawConfigParser):
 
     @staticmethod
     def load_db_secret(secret_file_path: Union[str, Path]) -> DatabaseSecret:
+        """
+        Charge le fichier de crédentiels d'accès en base
+
+        Args:
+            secret_file_path: Chemin vers le fichier de secrets
+
+        Returns:
+            Une structure, DatabaseSecret, contenant les secrets
+
+        """
         cfg = configparser.RawConfigParser()
         cfg.read(secret_file_path)
         user = cfg.get("database", "user")

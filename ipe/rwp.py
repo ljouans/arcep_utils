@@ -1,3 +1,6 @@
+"""
+Outil de lecture des fichiers IPE
+"""
 import logging
 import zipfile
 from pathlib import Path
@@ -48,9 +51,27 @@ def _type_df(df: pd.DataFrame, numeric_cols: List[str] = None):
             df.loc[:, col] = pd.to_numeric(df[col], errors='coerce')
 
 
-def parse_ipe(ipe_zip_path: Union[str, Path], columns: List[str], numeric_cols: List[str] = None,
-              cols_are_optional: bool = True, _test_nrows: int = None
-              ):
+def parse_ipe(ipe_zip_path: Union[str, Path],
+              columns: List[str],
+              numeric_cols: List[str] = None,
+              cols_are_optional: bool = True,
+              _test_nrows: int = None
+              ) -> pd.DataFrame:
+    """
+    Lis tous les fichiers IPE dans l'archive pointée et extrait les colonnes spécifiées, en les convertissant
+    éventuellement en nombre.
+
+    Args:
+        ipe_zip_path: Chemin vers l'archive
+        columns: Colonnes à extraire
+        numeric_cols: Colonnes numériques dans les colonnes à extraire
+        cols_are_optional: Ne plante pas si la colonne demandée n'existe pas dans l'IPE
+        _test_nrows:
+
+    Returns:
+        Un DF avec les colonnes demandées.
+
+    """
     with zipfile.ZipFile(ipe_zip_path) as z:
         file_issues = []
         dfs = []
@@ -154,5 +175,5 @@ def read_single_ipe(ipe_name: str, columns: List[str], numeric_cols: List[str] =
     return df
 
 
-def stem_to_interop(stem: str) -> str:
-    return stem.split('_')[2]
+# def stem_to_interop(stem: str) -> str:
+#     return stem.split('_')[2]

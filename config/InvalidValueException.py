@@ -1,5 +1,10 @@
+"""
+Exception pour les paramètres invalides lus en configuration.
+Peu utilisée.
+"""
 class InvalidValueError(ValueError):
-    """Erreur: paramètre invalide lu dans la configuration
+    """
+    Erreur: paramètre invalide lu dans la configuration
     """
 
     def __init__(self,
