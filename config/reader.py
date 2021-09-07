@@ -7,6 +7,7 @@ import configparser
 import glob
 from pathlib import Path
 from typing import NoReturn
+from typing import Tuple
 from typing import Union
 
 import utils.pathtools as pth
@@ -70,7 +71,7 @@ class ConfigManager(configparser.RawConfigParser):
                 )
 
     @staticmethod
-    def load_db_secret(secret_file_path: Union[str, Path]) -> DatabaseSecret:
+    def load_db_secret(secret_file_path: Union[str, Path]) -> Tuple[str, str]:
         """
         Charge le fichier de crédentiels d'accès en base
 
@@ -85,10 +86,8 @@ class ConfigManager(configparser.RawConfigParser):
         cfg.read(secret_file_path)
         user = cfg.get("database", "user")
         pwd = cfg.get("database", "password")
-        host = cfg.get("database", "host")
-        port = cfg.get("database", "port")
 
-        return DatabaseSecret(user=user, password=pwd, host=host, port=port)
+        return (user, pwd)
 
     @staticmethod
     def db_secret_to_connection_string(db_secret: DatabaseSecret, base: str) -> str:
