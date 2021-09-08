@@ -4,6 +4,7 @@ Collection d'outils généraux.
 import os
 import pickle
 import random
+import shutil
 import sys
 from pathlib import Path
 from typing import Any
@@ -13,6 +14,8 @@ from typing import Sized
 from typing import Union
 
 import tqdm
+
+from utils import pathtools
 
 CuPath = Optional[Union[str, Path]]
 
@@ -216,3 +219,7 @@ def convert_insee_drom_region_to_department(insee_region: str) -> str:
     """
     mapping = {'01': '971', '02': '972', '03': '973', '06': '976'}
     return mapping[insee_region]
+
+
+def clear_cache(base_path: Optional[Path] = None):
+    shutil.rmtree(pathtools.tmp_path(base_path=base_path))
