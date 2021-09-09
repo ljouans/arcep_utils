@@ -26,12 +26,16 @@ class ConfigManager(configparser.RawConfigParser):
     Le second prends la précedence sur le premier.
     """
 
-    def __init__(self):
+    def __init__(self, file_regex: str = None):
         super().__init__(converters={'list': _list_converter})
         # bases = glob.glob(str(pth.outer_out_path()) + '/base*.cfg')
-        bases = [str(pth.outer_out_path() / 'configuration.template')]
-        runs = glob.glob(str(pth.outer_out_path()) + '/run*.cfg')
-        self.read(bases + runs)
+        if file_regex is not None:
+            files = pth.outer_out_path().glob(file_regex)
+        else:
+            bases = [str(pth.outer_out_path() / 'configuration.template')]
+            runs = glob.glob(str(pth.outer_out_path()) + '/run*.cfg')
+            files = bases + runs
+        self.read(files)
 
     # def getlist(self, section: str, key: str) -> List[str]:
     #     """Lis le paramètre de configuration comme une liste python.
