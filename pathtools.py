@@ -68,6 +68,21 @@ def config_path(base_path: Optional[Union[Path, str]] = None) -> Path:
 
 
 def outer_path() -> Path:
+    """
+    Renvoi le chemin pointant vers parent2 dans l'arborescence ci-dessous.
+    `outer_path() / 'tutu.txt'` est valide.
+
+    parent2/
+        parent/
+            utils/
+                <this_script>
+            toto.txt
+        tutu.txt
+    tata.txt
+
+    Returns:
+
+    """
     path = get_tool_path().parent.parent
     path.mkdir(parents=True, exist_ok=True)
     return path
