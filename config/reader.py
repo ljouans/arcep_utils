@@ -91,7 +91,7 @@ class ConfigManager(configparser.RawConfigParser):
         user = cfg.get("database", "user")
         pwd = cfg.get("database", "password")
 
-        return (user, pwd)
+        return user, pwd
 
     @staticmethod
     def db_secret_to_connection_string(db_secret: DatabaseSecret, base: str) -> str:
