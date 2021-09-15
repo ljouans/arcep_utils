@@ -222,4 +222,10 @@ def convert_insee_drom_region_to_department(insee_region: str) -> str:
 
 
 def clear_cache(base_path: Optional[Path] = None):
+    """
+    Nettoie le cache. Supprime le dossier data/tmp
+
+    Args:
+        base_path: CHemin de base de travail
+    """
     shutil.rmtree(pathtools.tmp_path(base_path=base_path))
