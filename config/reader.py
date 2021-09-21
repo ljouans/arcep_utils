@@ -7,6 +7,7 @@ import configparser
 import glob
 from pathlib import Path
 from typing import NoReturn
+from typing import Optional
 from typing import Tuple
 from typing import Union
 
@@ -26,10 +27,12 @@ class ConfigManager(configparser.RawConfigParser):
     Le second prends la précedence sur le premier.
     """
 
-    def __init__(self, file_regex: str = None):
+    def __init__(self, file_regex: Optional[str] = None, filepath: Optional[Path] = None):
         super().__init__(converters={'list': _list_converter})
         # bases = glob.glob(str(pth.outer_out_path()) + '/base*.cfg')
-        if file_regex is not None:
+        if filepath is not None:
+            files = [str(filepath)]
+        elif file_regex is not None:
             files = pth.outer_out_path().glob(file_regex)
         else:
             bases = [str(pth.outer_out_path() / 'configuration.template')]
