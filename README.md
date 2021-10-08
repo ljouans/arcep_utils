@@ -2,11 +2,11 @@
 
 Boîte à outils pour mes projets conduits à l'ARCEP d'Avril à Octobre 2021.
 Les outils tombent dans cinq catégories: 
-- Les outils de chemin, pour travailler en chemin relatif depuis ce dossier (`pathtools.py`)[./pathtools.py] ;
-- Les outils de base données, pour réaliser des requêtes dans une base PostGresQL/PostGIS et renvoyer des Géo/DataFrames (`dbtool.py`)[./dbtools.py] ;
-- Les outils de lecture de fichier de configuration, basé sur `configparser` (`config/`)[./config/] ;
-- Les outils de lecture d'IPE (`ipe/`)[./ipe/] ;
-- Et la corbeille, (`misc.py`)[./misc.py] pour des itérateurs `tqdm` un peu généraux ou pour de l'écriture de fichier.
+- Les outils de chemin, pour travailler en chemin relatif depuis ce dossier [`pathtools.py`](./pathtools.py) ;
+- Les outils de base données, pour réaliser des requêtes dans une base PostGresQL/PostGIS et renvoyer des Géo/DataFrames [`dbtool.py`](./dbtools.py) ;
+- Les outils de lecture de fichier de configuration, basé sur `configparser` [`config/`](./config/) ;
+- Les outils de lecture d'IPE [`ipe/`](./ipe/) ;
+- Et la corbeille, [`misc.py`](./misc.py) pour des itérateurs `tqdm` un peu généraux ou pour de l'écriture de fichier.
 
 ## Notes spécifiques
 
