@@ -11,9 +11,9 @@ from typing import Optional
 from typing import Tuple
 from typing import Union
 
-import utils.pathtools as pth
-from utils.argstruct.database_secret import DatabaseSecret
-from utils.config.InvalidValueException import InvalidValueError
+from .. import pathtools as pth
+from ..argstruct.database_secret import DatabaseSecret
+from ..config.InvalidValueException import InvalidValueError
 
 
 def _list_converter(elems: str):

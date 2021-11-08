@@ -15,7 +15,7 @@ from typing import Union
 
 import tqdm
 
-from utils import pathtools
+from .import pathtools
 
 CuPath = Optional[Union[str, Path]]
 
