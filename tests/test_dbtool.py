@@ -8,13 +8,13 @@ import pandas as pd
 import pytest
 from pytest_mock import MockerFixture
 
-import utils.pathtools as pth
-from utils.argstruct.database_secret import ExtendedDatabaseSecret
-from utils.argstruct.geo_table_info import GeoInfo
-from utils.dbtool import Tool
-from utils.dbtool import _connection_string_from_db_secret
-from utils.dbtool import _connection_string_from_secret_file
-from utils.dbtool import _rm_string_marker
+import ..pathtools as pth
+from ..argstruct.database_secret import ExtendedDatabaseSecret
+from ..argstruct.geo_table_info import GeoInfo
+from ..dbtool import Tool
+from ..dbtool import _connection_string_from_db_secret
+from ..dbtool import _connection_string_from_secret_file
+from ..dbtool import _rm_string_marker
 
 
 def test__connection_string_from_secret_file():

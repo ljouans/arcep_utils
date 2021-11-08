@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 from pytest_mock import MockerFixture
 
-import utils.pathtools as pth
+from .. import pathtools as pth
 
 
 def test__get_tool_path():
