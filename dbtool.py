@@ -172,6 +172,7 @@ class Tool:
             geo_info: Optional[GeoInfo] = None,
             force_refetch: bool = False,
             params: Optional[Dict[str, Any]] = None,
+            force_epsg: int = None
             ) -> Union[pd.DataFrame, pdg.GeoDataFrame]:
         """Exécute une requête qui va chercher des données en base et les formatte en Geo/Dataframe.
 
@@ -189,16 +190,20 @@ class Tool:
         """
 
         crs = None
-        if geo_info is not None:
-            if geo_info.condition is None:
-                logging.warning(
-                        "You specified the informations to retrieve the CRS info, but you did not "
-                        "provide any condition over the database. Are you sure the table is meant to be"
-                        "unfiltered?"
-                        )
+        if force_epsg is not None:
+            crs = f'EPSG:{force_epsg}'
+        else:
+            if geo_info is not None:
+                if geo_info.condition is None:
+                    logging.warning(
+                            "You specified the informations to retrieve the CRS info, but you did not "
+                            "provide any condition over the database. Are you sure the table is meant to be"
+                            "unfiltered?"
+                            )
 
-            crs = "EPSG:" + self._get_crs(geo_info)
-            logging.debug("Found CRS = %s", crs)
+                crs = "EPSG:" + self._get_crs(geo_info)
+                logging.debug("Found CRS = %s", crs)
+
 
         _loader = self._get_proper_loader(geo_info)
 
