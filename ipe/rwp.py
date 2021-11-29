@@ -12,8 +12,8 @@ from typing import Union
 import pandas as pd
 import tqdm
 
-import utils.pathtools as pth
-from utils import misc
+from .. import pathtools as pth
+from .. import misc
 
 logger = logging.getLogger(__name__)
 
